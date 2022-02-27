@@ -3,7 +3,7 @@ const colors=require('colors');
 const mod=require("./module");
 const maths=require("./maths");
 const os=require('os');
-require('./fs');
+const path=require('path');
 
 //console.log(`Running node js app on ${process.env.PORT}`);
 
