@@ -1,35 +1,82 @@
-const dotenv=require("dotenv").config();
-const colors=require('colors');
-const mod=require("./module");
-const maths=require("./maths");
-const os=require('os');
+const { query } = require('express');
+const express=require('express');
+const res = require('express/lib/response');
+let app=express();
 const path=require('path');
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(bodyParser.json());
+require('dotenv').config();
 
-//console.log(`Running node js app on ${process.env.PORT}`);
+app.use(express.static(path.resolve('src/public')));
 
-//console.log(process.version.green);
+/* express().use((req,res)=>{
+     res.end("express app");
+}).listen(8080); */
 
-//console.log(__filename);
-//console.log(__dirname);
+/* app.use((req,res)=>{
+     res.setHeader('Content-Type','text/html');
+     res.status(200).send("<h1>express app running</h1>");
+}); */
 
-//console.log(mod);
-//console.log(global.name.red);
+app.use((req,res,next)=>{
+     console.log(`Login at ${Date.now()}`);
+     next();
+});
 
-//console.log(`Area of circle with radius ${maths.r} is ${maths.area}.`);
+app.get("/",(req,res)=>{
+     //res.status(200).send("Homepage");
+     //res.status(200).send("Home Page");
+     //res.status(200).send(req.url);
+     res.status(200).send(req.query);
+});
+app.get("/search",(req,res)=>{
+     //res.status(200).send(req.query);
+     res.status(200).json({search:req.query});
+});
+app.get("/products",(req,res)=>{
+     res.status(200).send(req.url);
+});
+app.get("/products/:brand",(req,res)=>{
+     res.status(200).send(req.params);
+});
+app.get("/products/:brand/:products/",(req,res)=>{
+     res.status(200).send(req.params);
+});
+app.get("/products/:brand/:products/:productname",(req,res)=>{
+     res.status(200).send(req.params);
+});
+app.get("/products/:brand/:products/:productname/:variant",(req,res)=>{
+     res.status(200).send(req.params);
+});
 
-//console.log(maths.toFixed(2));
+app.get("/app",(req,res)=>{
+     res.status(200).send("app");
+});
 
-//console.log(os.cpus().length);                         // 8 threads
-//console.table(os.cpus());
+app.post('/postdata',(req,res)=>{
+     let id=req.body.username;
+     let pass=req.body.userpass;
 
-//console.log(os.freemem()/1024/1024);
-//console.log(os.totalmem()/1024/1024);
+     if( id=="admin" && pass=="123456"){
+          res.status(200).send(req.body);
+     }
+     else{
+          res.status(200).send('Invalid user id or password');
+     }
+});
+
+/* from router */
+const admin=require('./routes/admin');
+const user=require('./routes/users');
+app.use("/admin",admin);
+app.use("/user",user);
 
 
+app.get('/**',(req,res)=>{
+     res.status(404).send("404 - Page not found");
+});
 
-//console.log(os.networkInterfaces());
-//console.log(os.platform());
-//console.log(os.type());
-//console.log(os.uptime()/3600);
-
-//console.log(os.userInfo());
+app.listen(process.env.PORT,()=>{
+     console.log(`App running at http://127.0.0.1:${process.env.PORT}`);
+});
