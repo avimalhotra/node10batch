@@ -3,12 +3,17 @@ const express=require('express');
 const res = require('express/lib/response');
 let app=express();
 const path=require('path');
+const cookieparser=require('cookie-parser');
 const bodyParser = require('body-parser');
+
+
+app.use(cookieparser());
 app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(bodyParser.json());
+
 require('dotenv').config();
 
-app.use(express.static(path.resolve('src/public')));
+//app.use(express.static(path.resolve('src/public')));
 
 /* express().use((req,res)=>{
      res.end("express app");
@@ -20,7 +25,7 @@ app.use(express.static(path.resolve('src/public')));
 }); */
 
 app.use((req,res,next)=>{
-     console.log(`Login at ${Date.now()}`);
+     //console.log(`Login at ${Date.now()}`);
      next();
 });
 
@@ -28,8 +33,20 @@ app.get("/",(req,res)=>{
      //res.status(200).send("Homepage");
      //res.status(200).send("Home Page");
      //res.status(200).send(req.url);
-     res.status(200).send(req.query);
+     //res.status(200).send(req.query);
+     //res.status(200).send(Object.keys(req.cookies));
+
+    if(req.cookies.location){
+          res.status(200).send(req.cookies);
+    }
+    else{
+          res.status(200).send("no cookies");
+    }
 });
+app.get("/savecookie",(req,res)=>{
+     res.cookie("name","avinash", {maxAge:86400, httpOnly: true});
+     res.send("cookie saved");
+})
 app.get("/search",(req,res)=>{
      //res.status(200).send(req.query);
      res.status(200).json({search:req.query});
