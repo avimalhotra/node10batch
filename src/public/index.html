@@ -24,20 +24,24 @@
        <fieldset>
          <legend>Post Data</legend>
          <form action="/postdata" method="post">
-          <label>Username: <input type="text" name="username" required></label>
-          <label>Password: <input type="password" name="userpass" maxlength="6" required></label>
-          <button type="submit">Send</button>
+          <label>Username: <input class="form-control" type="text" name="username" required></label>
+          <label>Password: <input class="form-control" type="password" name="userpass" maxlength="6" required></label>
+          <button class="btn btn-success" type="submit">Send</button>
         </form>
        </fieldset>
       </div>
 
-      <div class="mb-3"> 
+      <div class="mb-5"> 
         <fieldset>
           <legend>Get Data</legend>
         <form action="/search" role="search">
-        <label>Search <input type="search" name="product" required> </label>
-        <button>Search</button>
-      </form></fieldset></div>
+        <label>Search <input class="form-control" type="search" name="product" required> </label>
+        <button class="btn btn-primary">Search</button>
+      </form></fieldset>
+      <table class="table table-bordered">
+        <tr><th>Name</th><th>Body Type</th><th>Price</th></tr>
+      </table>
+    </div>
      </main>
      
     </div>
@@ -46,8 +50,33 @@
    
     <script>
 
-  fetch('http://127.0.0.1/api').then(i=>i.json()).then(i=>console.log(i));
+    fetch('http://127.0.0.1/api').then(i=>i.json()).then(i=>console.log(i));
 
+    document.querySelector('input[type="search"]').addEventListener("input",function(){
+      let data=this.value;
+
+      if( data.length>2){
+        fetch('http://127.0.0.1/searchdata',{method:"POST",body:JSON.stringify({"product":data})}).then(i=>i.json()).then(i=>{
+            document.querySelector("table").innerHTML+=`<tr><td>${i.name}</td><td>${i.type}</td><td>${i.price}</td></tr>`;
+        });
+      }
+
+    });
+
+    </script>
+
+    <script type="module">
+import { io } from "socket.io-client";
+
+const socket = io("ws://localhost:3000");
+
+// send a message to the server
+socket.emit("hello from client", 5, "6", { 7: Uint8Array.from([8]) });
+
+// receive a message from the server
+socket.on("hello from server", (...args) => {
+  // ...
+});
     </script>
   </body>
 </html>

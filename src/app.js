@@ -19,6 +19,7 @@ app.use(session({
 app.use(cookieparser());
 app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 
 require('dotenv').config();
 
@@ -83,6 +84,18 @@ app.get("/api",(req,res)=>{
      return res.status(200).send(cars);
 
 });
+app.post("/searchdata",(req,res)=>{
+     let data=req.body;
+     data=JSON.parse(data);
+     let product=data.product;
+
+     cars.forEach(i=>{
+          if( i.name==product){ 
+               res.status(200).json(i);
+          }
+     });
+
+})
 
 app.get("/savecookie",(req,res)=>{
      res.cookie("name","avinash", {maxAge:86400, httpOnly: true});
@@ -128,6 +141,7 @@ app.post('/postdata',(req,res)=>{
 const admin=require('./routes/admin');
 const user=require('./routes/users');
 const { off } = require('process');
+const { log } = require('console');
 app.use("/admin",admin);
 app.use("/user",user);
 
