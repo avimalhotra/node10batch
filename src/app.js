@@ -2,11 +2,18 @@ const { query } = require('express');
 const express=require('express');
 const res = require('express/lib/response');
 let app=express();
+const ejs=require("ejs");
 const path=require('path');
 const cookieparser=require('cookie-parser');
 const bodyParser = require('body-parser');
 const session=require('express-session');
 const parseurl=require('parseurl');
+const LRU=require('lru-cache');
+ejs.cache=new LRU(100);
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'public'));
+
 app.set('trust proxy', 1); 
 app.use(session({
      secret:"session",
@@ -14,6 +21,7 @@ app.use(session({
      saveUninitialized:true,
      cookie:{secure:false,maxAge:5000}                          // session expires after 1 min
  }));
+
 
 
 app.use(cookieparser());
@@ -65,7 +73,8 @@ app.get("/",(req,res)=>{
     } */
     //req.session.time=Date.now();
     //res.status(200).send(`Session ID is ${req.sessionID} and time is ${req.session.time}`);
-    res.send( req.sessionID +', Session Views :  '+ req.session.views['/'] + ' times');
+    //res.send( req.sessionID +', Session Views :  '+ req.session.views['/'] + ' times');
+    res.render("index",{name:"EJS", version:'3.1.6',user:{name:'foo',id:12},month:["jan","feb","mar","apr"]});
 });
 
 let cars=[
